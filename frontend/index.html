@@ -3,32 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ContaPay</title>
-
-    <!-- Ícone e configurações para iPhone / Tela de Início (Web App) -->
+<title>ContaPay</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
     <meta name="apple-mobile-web-app-title" content="ContaPay">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
-    <!-- Firebase SDK (Compat) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <!-- jsPDF para Exportação de Relatórios -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body>
+<body class="light-theme">
 
-    <!-- ================= TELA 1: LOGIN E CADASTRO ================= -->
+ <!-- ================= TELA 1: LOGIN E CADASTRO ================= -->
     <section id="login-screen" class="auth-wrapper">
         <div class="login-card">
             <div class="brand-header">
@@ -89,35 +75,41 @@
             <p class="signup-text hidden" id="toggle-to-login-box">
                 Já possui conta? <a href="#" id="show-login-btn">Fazer login</a>
             </p>
-
-            <footer class="auth-footer">
-                Criado por <strong>Arthur Torres</strong>
-            </footer>
         </div>
     </section>
 
-    <!-- ================= TELA 2: SISTEMA PRINCIPAL ================= -->
-    <div id="app-layout" class="app-wrapper hidden">
+    <!-- ================= TELA 2: PAINEL PRINCIPAL ================= -->
+    <div id="app-layout" class="app-layout hidden">
+        
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
-                <img src="logo.png" alt="Logo" class="sidebar-logo-img">
-                <span>ContaPay</span>
+                <div class="brand-icon">
+                    <img src="logo.png" alt="Logo ContaPay" class="brand-logo-img">
+                </div>
+                <div>
+                    <strong>ContaPay</strong>
+                    <small>Gestão Financeira</small>
+                </div>
             </div>
 
             <nav class="sidebar-nav">
-                <button class="nav-item active" data-page="home">🏠 Home / Visão Geral</button>
-                <button class="nav-item" data-page="pagar">📤 Contas a Pagar</button>
-                <button class="nav-item" data-page="receber">📥 Contas a Receber</button>
-                <button class="nav-item" data-page="relatorios">📊 Relatórios e PDF</button>
+                <button class="nav-item active" data-page="home">
+                    <span>🏠</span> Home
+                </button>
+                <button class="nav-item" data-page="pagar">
+                    <span>💸</span> Contas a Pagar
+                </button>
+                <button class="nav-item" data-page="receber">
+                    <span>💰</span> Contas a Receber
+                </button>
+                <button class="nav-item" data-page="relatorios">
+                    <span>📄</span> Relatórios e Etiquetas
+                </button>
             </nav>
 
-            <div class="sidebar-actions">
-                <button class="btn-add-expense" id="btn-nova-despesa-side">+ Nova Despesa</button>
-                <button class="btn-add-income" id="btn-nova-receita-side">+ Nova Receita</button>
-            </div>
-
             <div class="sidebar-footer">
-                <p>Criado por <strong>Arthur Torres</strong></p>
+                <button id="btn-nova-despesa-side" class="btn-sidebar-action">+ Nova Despesa</button>
+                <button id="btn-nova-receita-side" class="btn-sidebar-action green">+ Nova Receita</button>
             </div>
         </aside>
 
@@ -125,91 +117,93 @@
             <header class="topbar">
                 <div class="topbar-left">
                     <button id="mobile-menu-btn" class="icon-btn mobile-only">☰</button>
-                    <div>
-                        <h2 id="greeting-text">Olá, <span id="user-display-name">Usuário</span>!</h2>
-                        <p class="subtitle">Controle inteligente de contas a pagar e receber</p>
-                    </div>
+                    <span class="greeting">Olá, <strong id="user-display-name">Usuário</strong>! 👋</span>
                 </div>
 
                 <div class="topbar-right">
-                    <div class="period-pill-selector" title="Filtrar painel por mês e ano">
-                        <span class="period-icon">📅</span>
-                        <select id="global-month-select">
-                            <option value="01">Janeiro</option>
-                            <option value="02">Fevereiro</option>
-                            <option value="03">Março</option>
-                            <option value="04">Abril</option>
-                            <option value="05">Maio</option>
-                            <option value="06">Junho</option>
-                            <option value="07">Julho</option>
-                            <option value="08">Agosto</option>
-                            <option value="09">Setembro</option>
-                            <option value="10">Outubro</option>
-                            <option value="11" selected>Novembro</option>
-                            <option value="12">Dezembro</option>
-                            <option value="todos">Todos os meses</option>
-                        </select>
-                        <select id="global-year-select">
-                            <option value="2025">2025</option>
-                            <option value="2026" selected>2026</option>
-                            <option value="2027">2027</option>
-                        </select>
-                    </div>
-
-                    <button id="theme-toggle" class="icon-btn" title="Alternar tema">🌙</button>
-                    <button id="open-profile-btn" class="profile-chip">
-                        <img id="header-avatar" src="" alt="Foto">
-                        <span>Meu Perfil</span>
+                    <button id="theme-toggle" class="icon-btn" title="Alternar Tema">🌙</button>
+                    <button id="open-profile-btn" class="profile-trigger" title="Meu Perfil">
+                        <img id="header-avatar" src="" alt="Perfil">
                     </button>
-                    <button id="logout-btn" class="btn-logout">Sair</button>
+                    <button id="logout-btn" class="icon-btn" title="Sair">❌</button>
                 </div>
             </header>
 
-            <!-- ABA: HOME / VISÃO GERAL -->
+            <!-- Seletor Moderno de Mês -->
+            <div class="month-bar">
+                <div class="modern-month-selector">
+                    <span>📅</span>
+                    <select id="global-month-select" aria-label="Selecionar Mês">
+                        <option value="todos">Todos os Meses</option>
+                        <option value="01">Janeiro</option>
+                        <option value="02">Fevereiro</option>
+                        <option value="03">Março</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Maio</option>
+                        <option value="06">Junho</option>
+                        <option value="07">Julho</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11" selected>Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                    <select id="global-year-select" aria-label="Selecionar Ano">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- PÁGINA 1: HOME -->
             <main id="page-home" class="page-content">
                 <div class="kpi-grid">
                     <div class="kpi-card">
-                        <span class="kpi-label">Saldo do Período (<span id="kpi-period-label">Novembro/2026</span>)</span>
-                        <strong class="kpi-value" id="kpi-saldo">R$ 0,00</strong>
-                    </div>
-                    <div class="kpi-card">
-                        <span class="kpi-label">Total a Receber (Receitas)</span>
-                        <strong class="kpi-value text-green" id="kpi-receitas">R$ 0,00</strong>
-                    </div>
-                    <div class="kpi-card">
-                        <span class="kpi-label">Total a Pagar (Despesas)</span>
-                        <strong class="kpi-value text-red" id="kpi-despesas">R$ 0,00</strong>
-                    </div>
-                    <div class="kpi-card">
-                        <span class="kpi-label">Contas Pendentes</span>
-                        <strong class="kpi-value text-amber" id="kpi-pendentes">R$ 0,00</strong>
-                    </div>
-                </div>
-
-                <!-- GERENCIADOR DE ETIQUETAS (TAGS) -->
-                <div class="card-panel tags-panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>🏷️ Minhas Etiquetas Personalizadas</h3>
-                            <p class="subtitle">Crie etiquetas para agrupar lançamentos e exportar relatórios separados</p>
+                        <div class="kpi-icon navy">🏦</div>
+                        <div class="kpi-info">
+                            <span>Saldo Previsto</span>
+                            <strong id="kpi-saldo">R$ 0,00</strong>
+                            <small id="kpi-period-label">Novembro/2026</small>
                         </div>
-                        <form id="tag-form" class="tag-create-form">
-                            <input type="text" id="new-tag-name" placeholder="Ex: Reforma, Viagem, Loja..." required maxlength="24">
-                            <input type="color" id="new-tag-color" value="#102D50" title="Cor da etiqueta">
-                            <button type="submit" class="btn-primary btn-sm">+ Criar Etiqueta</button>
-                        </form>
                     </div>
-                    <div id="tags-list-container" class="tags-pills-wrapper"></div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon green">📈</div>
+                        <div class="kpi-info">
+                            <span>Receitas</span>
+                            <strong id="kpi-receitas" class="text-green">R$ 0,00</strong>
+                            <small>Contas a receber</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon red">📉</div>
+                        <div class="kpi-info">
+                            <span>Despesas</span>
+                            <strong id="kpi-despesas" class="text-red">R$ 0,00</strong>
+                            <small>Contas a pagar</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon orange">⏳</div>
+                        <div class="kpi-info">
+                            <span>Pendentes</span>
+                            <strong id="kpi-pendentes" class="text-orange">R$ 0,00</strong>
+                            <small>Aguardando baixa</small>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="split-grid">
-                    <div class="card-panel">
+                <div class="dual-tables-grid">
+                    <div class="panel-card">
                         <div class="panel-header">
-                            <h3>📤 Próximas Contas a Pagar</h3>
-                            <button class="btn-link" onclick="switchPage('pagar')">Ver todas</button>
+                            <div>
+                                <h3>⚠️ Contas a pagar</h3>
+                                <small class="legend">• pendentes / vencidas &nbsp; • pagas</small>
+                            </div>
+                            <button class="btn-link" onclick="switchPage('pagar')">ver todas</button>
                         </div>
                         <div class="table-responsive">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Vencimento</th>
@@ -224,16 +218,19 @@
                         </div>
                     </div>
 
-                    <div class="card-panel">
+                    <div class="panel-card">
                         <div class="panel-header">
-                            <h3>📥 Próximas Contas a Receber</h3>
-                            <button class="btn-link" onclick="switchPage('receber')">Ver todas</button>
+                            <div>
+                                <h3>💵 Contas a receber</h3>
+                                <small class="legend">• previstas &nbsp; • recebidas</small>
+                            </div>
+                            <button class="btn-link" onclick="switchPage('receber')">ver todas</button>
                         </div>
                         <div class="table-responsive">
-                            <table>
+                            <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Previsão</th>
+                                        <th>Data</th>
                                         <th>Descrição</th>
                                         <th>Etiqueta</th>
                                         <th>Valor</th>
@@ -247,22 +244,26 @@
                 </div>
             </main>
 
-            <!-- ABA: CONTAS A PAGAR -->
+            <!-- PÁGINA 2: CONTAS A PAGAR -->
             <main id="page-pagar" class="page-content hidden">
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>📤 Gestão Completa de Contas a Pagar</h3>
-                        <button class="btn-add-expense" onclick="openTransactionModal('despesa')">+ Nova Conta a Pagar</button>
+                <div class="page-header-row">
+                    <div>
+                        <h2>Contas a Pagar</h2>
+                        <p>Gerencie todas as suas despesas fixas e variáveis</p>
                     </div>
+                    <button class="btn-primary width-auto" onclick="openTransactionModal('despesa')">+ Nova Despesa</button>
+                </div>
+
+                <div class="panel-card">
                     <div class="table-responsive">
-                        <table>
+                        <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Vencimento</th>
                                     <th>Descrição</th>
                                     <th>Etiqueta</th>
                                     <th>Categoria</th>
-                                    <th>Pagamento</th>
+                                    <th>Forma Pagto</th>
                                     <th>Valor</th>
                                     <th>Status</th>
                                     <th>Ações</th>
@@ -274,22 +275,26 @@
                 </div>
             </main>
 
-            <!-- ABA: CONTAS A RECEBER -->
+            <!-- PÁGINA 3: CONTAS A RECEBER -->
             <main id="page-receber" class="page-content hidden">
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <h3>📥 Gestão Completa de Contas a Receber</h3>
-                        <button class="btn-add-income" onclick="openTransactionModal('receita')">+ Nova Conta a Receber</button>
+                <div class="page-header-row">
+                    <div>
+                        <h2>Contas a Receber</h2>
+                        <p>Controle suas entradas, salários e recebimentos</p>
                     </div>
+                    <button class="btn-primary width-auto green-bg" onclick="openTransactionModal('receita')">+ Nova Receita</button>
+                </div>
+
+                <div class="panel-card">
                     <div class="table-responsive">
-                        <table>
+                        <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Data Prevista</th>
                                     <th>Descrição</th>
                                     <th>Etiqueta</th>
                                     <th>Categoria</th>
-                                    <th>Recebimento</th>
+                                    <th>Conta Destino</th>
                                     <th>Valor</th>
                                     <th>Status</th>
                                     <th>Ações</th>
@@ -301,54 +306,82 @@
                 </div>
             </main>
 
-            <!-- ABA: RELATÓRIOS E EXPORTAÇÃO PDF -->
+            <!-- PÁGINA 4: RELATÓRIOS PDF E ETIQUETAS -->
             <main id="page-relatorios" class="page-content hidden">
-                <div class="card-panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>📊 Relatórios Financeiros por Mês e Etiqueta</h3>
-                            <p class="subtitle">Filtre por período ou etiqueta e baixe o extrato em PDF</p>
-                        </div>
-                        <button id="btn-export-pdf" class="btn-primary">📄 Baixar Relatório em PDF</button>
+                <div class="page-header-row">
+                    <div>
+                        <h2>Relatórios e Etiquetas</h2>
+                        <p>Filtre por mês, etiqueta, tipo ou situação e exporte em PDF</p>
                     </div>
+                    <button id="btn-export-pdf" class="btn-primary width-auto green-bg">📥 Exportar PDF Filtrado</button>
+                </div>
 
-                    <div class="filter-bar">
+                <div class="panel-card mb-20">
+                    <h3 class="mb-12">🏷️ Minhas Etiquetas Personalizadas</h3>
+                    <form id="tag-form" class="tag-creator-bar">
+                        <input type="text" id="new-tag-name" placeholder="Nome da etiqueta (Ex: Viagem, Reforma, Cliente A)" required>
+                        <input type="color" id="new-tag-color" value="#27C6A0" title="Cor da etiqueta">
+                        <button type="submit" class="btn-primary width-auto">+ Criar Etiqueta</button>
+                    </form>
+                    <div id="tags-list-container" class="tags-pills-wrap"></div>
+                </div>
+
+                <div class="panel-card mb-20">
+                    <h3 class="mb-12">🔍 Filtrar Lançamentos para o Relatório</h3>
+                    <div class="filter-bar-4">
                         <div class="input-group">
-                            <label for="filter-month">Mês / Ano</label>
-                            <select id="filter-month"></select>
+                            <label for="filter-month">Mês / Período</label>
+                            <select id="filter-month">
+                                <option value="todos">Todos os meses</option>
+                                <option value="2026-01">Janeiro / 2026</option>
+                                <option value="2026-02">Fevereiro / 2026</option>
+                                <option value="2026-03">Março / 2026</option>
+                                <option value="2026-04">Abril / 2026</option>
+                                <option value="2026-05">Maio / 2026</option>
+                                <option value="2026-06">Junho / 2026</option>
+                                <option value="2026-07">Julho / 2026</option>
+                                <option value="2026-08">Agosto / 2026</option>
+                                <option value="2026-09">Setembro / 2026</option>
+                                <option value="2026-10">Outubro / 2026</option>
+                                <option value="2026-11" selected>Novembro / 2026</option>
+                                <option value="2026-12">Dezembro / 2026</option>
+                            </select>
                         </div>
                         <div class="input-group">
-                            <label for="filter-tag">Filtrar por Etiqueta</label>
+                            <label for="filter-tag">Etiqueta</label>
                             <select id="filter-tag">
                                 <option value="todas">Todas as etiquetas</option>
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="filter-type">Tipo de Conta</label>
+                            <label for="filter-type">Tipo de Movimentação</label>
                             <select id="filter-type">
-                                <option value="todos">Todas (Receitas e Despesas)</option>
-                                <option value="pagar">Somente Contas a Pagar</option>
-                                <option value="receber">Somente Contas a Receber</option>
+                                <option value="todos">Receitas e Despesas</option>
+                                <option value="despesa">Apenas Despesas (A Pagar)</option>
+                                <option value="receita">Apenas Receitas (A Receber)</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label for="filter-status">Situação</label>
                             <select id="filter-status">
-                                <option value="todos">Todas</option>
-                                <option value="Pago">Pago / Recebido</option>
-                                <option value="Pendente">Pendente</option>
+                                <option value="todos">Todas (Pagas e Pendentes)</option>
+                                <option value="Pago">Apenas Pagas / Recebidas</option>
+                                <option value="Pendente">Apenas Pendentes</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="report-summary-bar">
-                        <span>Receitas Filtradas: <strong id="rep-receitas" class="text-green">R$ 0,00</strong></span>
-                        <span>Despesas Filtradas: <strong id="rep-despesas" class="text-red">R$ 0,00</strong></span>
-                        <span>Saldo do Filtro: <strong id="rep-saldo">R$ 0,00</strong></span>
+                    <div class="report-summary-strip">
+                        <div>Receitas Filtradas: <strong id="rep-receitas" class="text-green">R$ 0,00</strong></div>
+                        <div>Despesas Filtradas: <strong id="rep-despesas" class="text-red">R$ 0,00</strong></div>
+                        <div>Saldo do Filtro: <strong id="rep-saldo">R$ 0,00</strong></div>
                     </div>
+                </div>
 
+                <div class="panel-card">
+                    <h3 class="mb-12">📋 Pré-visualização do Relatório</h3>
                     <div class="table-responsive">
-                        <table>
+                        <table class="data-table" id="report-preview-table">
                             <thead>
                                 <tr>
                                     <th>Data</th>
@@ -356,7 +389,7 @@
                                     <th>Descrição</th>
                                     <th>Etiqueta</th>
                                     <th>Categoria</th>
-                                    <th>Status</th>
+                                    <th>Situação</th>
                                     <th>Valor</th>
                                 </tr>
                             </thead>
@@ -365,102 +398,110 @@
                     </div>
                 </div>
             </main>
+
+            <footer class="app-footer">
+                © 2026 <strong>ContaPay</strong> • Criado por <strong>Arthur Torres</strong>
+            </footer>
         </div>
     </div>
 
-    <!-- MODAL: NOVA / EDITAR CONTA -->
-    <div id="tx-modal" class="modal-backdrop hidden">
+    <!-- ================= MODAL: CRIAR / EDITAR CONTA ================= -->
+    <div id="tx-modal" class="modal-overlay hidden">
         <div class="modal-card">
-            <h3 id="tx-modal-title">Novo Lançamento</h3>
+            <div class="modal-header">
+                <h3 id="tx-modal-title">Nova Despesa</h3>
+                <button id="close-tx-modal" class="close-btn">✖</button>
+            </div>
             <form id="tx-form">
-                <input type="hidden" id="tx-id">
+                <input type="hidden" id="tx-id" value="">
                 <input type="hidden" id="tx-type" value="despesa">
                 <div class="input-group">
-                    <label>Descrição</label>
-                    <input type="text" id="tx-title" placeholder="Ex: Aluguel, Salário, Luz..." required>
+                    <label for="tx-title">Descrição</label>
+                    <input type="text" id="tx-title" placeholder="Ex: Conta de Luz, Salário..." required>
                 </div>
-                <div class="grid-2">
+                <div class="form-row-2">
                     <div class="input-group">
-                        <label>Valor (R$)</label>
-                        <input type="number" step="0.01" id="tx-amount" placeholder="0,00" required>
+                        <label for="tx-amount">Valor (R$)</label>
+                        <input type="number" id="tx-amount" step="0.01" placeholder="0,00" required>
                     </div>
                     <div class="input-group">
-                        <label>Data / Vencimento</label>
+                        <label for="tx-date">Data / Vencimento</label>
                         <input type="date" id="tx-date" required>
                     </div>
                 </div>
-                <div class="grid-2">
+                <div class="form-row-2">
                     <div class="input-group">
-                        <label>Etiqueta</label>
+                        <label for="tx-tag">Etiqueta (Tag)</label>
                         <select id="tx-tag"></select>
                     </div>
                     <div class="input-group">
-                        <label>Categoria</label>
+                        <label for="tx-category">Categoria</label>
                         <select id="tx-category">
                             <option value="Moradia">Moradia</option>
                             <option value="Alimentação">Alimentação</option>
                             <option value="Transporte">Transporte</option>
-                            <option value="Salário / Serviços">Salário / Serviços</option>
-                            <option value="Lazer & Outros">Lazer & Outros</option>
+                            <option value="Saúde">Saúde</option>
+                            <option value="Salário">Salário / Renda</option>
+                            <option value="Outros">Outros</option>
                         </select>
                     </div>
                 </div>
-                <div class="grid-2">
+                <div class="form-row-2">
                     <div class="input-group">
-                        <label>Forma de Pagamento</label>
+                        <label for="tx-payment">Forma / Conta</label>
                         <select id="tx-payment">
                             <option value="Pix">Pix</option>
+                            <option value="Conta Corrente">Conta Corrente</option>
                             <option value="Cartão de Crédito">Cartão de Crédito</option>
                             <option value="Boleto">Boleto</option>
-                            <option value="Transferência">Transferência</option>
+                            <option value="Débito">Débito</option>
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>Situação</label>
+                        <label for="tx-status">Situação</label>
                         <select id="tx-status">
                             <option value="Pendente">Pendente</option>
                             <option value="Pago">Pago / Recebido</option>
                         </select>
                     </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="close-tx-modal">Cancelar</button>
-                    <button type="submit" class="btn-primary">Salvar Lançamento</button>
-                </div>
+                <button type="submit" class="btn-primary">Salvar Lançamento</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: MEU PERFIL -->
-    <div id="profile-modal" class="modal-backdrop hidden">
+    <!-- ================= MODAL: MEU PERFIL ================= -->
+    <div id="profile-modal" class="modal-overlay hidden">
         <div class="modal-card">
-            <h3>Editar Perfil</h3>
+            <div class="modal-header">
+                <h3>Meu Perfil</h3>
+                <button id="close-profile-btn" class="close-btn">✖</button>
+            </div>
             <form id="profile-form">
                 <div class="avatar-upload-box">
-                    <img id="edit-avatar-preview" src="" alt="Avatar">
+                    <img id="edit-avatar-preview" src="" alt="Foto">
                     <label for="edit-avatar-input" class="btn-upload">Alterar Foto</label>
                     <input type="file" id="edit-avatar-input" accept="image/*" class="hidden">
                 </div>
                 <div class="input-group">
-                    <label>Nome completo</label>
+                    <label for="edit-name">Nome de exibição</label>
                     <input type="text" id="edit-name" required>
                 </div>
                 <div class="input-group">
-                    <label>E-mail (não alterável)</label>
+                    <label for="edit-email">E-mail</label>
                     <input type="email" id="edit-email" disabled>
                 </div>
                 <div class="input-group">
-                    <label>Nova Senha (deixe em branco para manter)</label>
+                    <label for="edit-password">Nova Senha (opcional)</label>
                     <input type="password" id="edit-password" placeholder="••••••">
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="close-profile-btn">Cancelar</button>
-                    <button type="submit" class="btn-primary">Salvar Perfil</button>
-                </div>
+                <button type="submit" class="btn-primary">Salvar Perfil</button>
             </form>
         </div>
     </div>
-
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
